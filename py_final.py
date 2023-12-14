@@ -90,7 +90,7 @@ make_time=time.monotonic()
 Janki = 5
 difc = 0
 
-def mouse_move(e):
+def mouse_move(e):                  # 100번째 줄까지 교과서 179쪽 인용
     global mouse_x, mouse_y
     mouse_x = e.x
     mouse_y = e.y
@@ -114,7 +114,7 @@ def make_word(difc):                            #단어 랜덤 생성
         mk_word["text"]= ITEM3[a]
     wx=random.randint(1,750)
     if event_number >= 1 and event_number <4:
-        mk_word.config(fg="blue")       #이벤트 단어는 단어색이 파란색
+        mk_word.config(fg="blue")       #이벤트 단어는 단어색이 파란색, 빨간색, 초록색
     elif event_number == 4:
         mk_word.config(fg="red")
     elif event_number  >4 and event_number < 7:
@@ -123,15 +123,10 @@ def make_word(difc):                            #단어 랜덤 생성
     DROP.append(mk_word)                #떨어지는 단어에 추가
 
 
-def delete_word(lab):
+def delete_word(lab):                   #단어 삭제
     DROP.remove(lab)
     lab.destroy()
     
-def draw_txt(txt, x, y, siz, col, tg):      #텍스트 생성
-    fnt = (wf, siz, "bold")
-    cvs.create_text(x + 2, y + 2, text=txt, fill="black", font=fnt, tag=tg)
-    cvs.create_text(x, y, text=txt, fill=col, font=fnt, tag=tg)
-
 def game_main():
     global index, score, mouse_c, start_time
     global make_time, difficulty
@@ -143,6 +138,7 @@ def game_main():
         cvs.create_image(460, 390, image= a, tag="START")
         mouse_c = 0
         index = 1
+
     elif index == 1:
         if mouse_c == 1:
             b= tkinter.PhotoImage(file="ingame.png")
@@ -150,28 +146,31 @@ def game_main():
             cvs.delete("START")
             index = 2
             mouse_c = 0
+
     elif index == 2:   
         game_set()                  #게임화면 세팅
         score_label["text"]= "0점"
         start_time=time.monotonic()     #시작시간 체크
         index = 3
+
     elif index == 3:
         make_word(difc)
         make_time=time.monotonic()      #단어 생성 주기 체크
         v= random.randint(1,4)
         index = 4
+
     elif index == 4:
         now = time.monotonic()
         if now-start_time>float(30*phase):          #30초마다 빨라짐
             phase_label["text"]="PHASE"+str(phase+1)
             difficulty=difficulty+2
             phase=phase+1
-            if phase == 4 or phase == 7:
+            if phase == 4 or phase == 7:            # 페이즈 4, 7일때 난이도 상승
                 difc = difc+1
-        if now-make_time>v:                     #1~4초 랜덤 단어생성
+        if now-make_time>v:                     #1~4초 랜덤 단어생성 (랜덤 변수 v)
             index=3
         for lab in DROP:                           #단어드랍
-            wx=int(lab.winfo_x())
+            wx=int(lab.winfo_x())                  # 떨어지는 라벨 x, y좌표 받기
             wy=int(lab.winfo_y())
             wy=wy+difficulty
             lab.place(x=wx,y=wy)
@@ -185,11 +184,13 @@ def game_main():
         Janki_label["text"]= "남은목숨 : "+str(Janki)
         if Janki <= 0:
             index = 5
+
     elif index == 5:
        game_end()     #게임 종료 화면 정의
        index= 6
+
     elif index == 6:
-        if 350 <= mouse_x and mouse_x < 450 and mouse_y >=500 and mouse_y < 612:
+        if 350 <= mouse_x and mouse_x < 450 and mouse_y >=500 and mouse_y < 612:        #마우스 커서 이미지, 마우스 포인터 관련 명령어 교과서 183쪽 인용
             cvs.delete("CURSOR")
             if mouse_c == 1:
                 score_label.destroy()
@@ -210,6 +211,7 @@ def game_main():
 def game_set():
     global score_label, entry_word, phase_label, Janki_label, entry_label
     global Janki, score, start_time, difc, make_time, difficulty, now, phase
+
     score_label = tkinter.Label(root, font=(wf, 32), bg="#f9f9ee")
     score_label.place(x=750, y=80)
     entry_label = tkinter.Label(root,text="입력 : ", font=(wf, 14),bg="#ddffe5")
@@ -218,10 +220,11 @@ def game_set():
     entry_word.focus()                  #시작하자마자 입력창에 커서
     phase_label = tkinter.Label(text="PHASE"+str(phase),font=(wf, 14), bg="#e6e6db")
     phase_label.place(x=60,y=35)
-    cvs.create_line(0,590,912,590, fill="")
     Janki_label = tkinter.Label(root, font=(wf, 12), bg="#c7c7ae")
     Janki_label.place(x= 770, y=35)
-    Janki = 5
+    cvs.create_line(0,590,912,590, fill="")
+
+    Janki = 5               # 게임 내 변수 초기화
     score = 0
     phase = 0
     start_time = 0
@@ -234,7 +237,7 @@ def game_end():   #게임 종료 화면
     global entry_word, entry_label, phase_label, Janki_label, score_label
     global c, index, mouse_c, mouse_x, mouse_y
     cvs.delete("ingame")
-    for lab in DROP:
+    for lab in DROP:                # 화면 내 단어 파괴
         lab.destroy()
     entry_word.place(x=-100,y=-100)
     entry_label.destroy()
@@ -242,7 +245,7 @@ def game_end():   #게임 종료 화면
     Janki_label.destroy()
     score_label.place(x=400, y=380)
     score_label.config(bg="black", fg="#42c75d")
-    DROP.clear()
+    DROP.clear()                    # 배열 값 초기화
     c= tkinter.PhotoImage(file="gameover.png")
     cvs.create_image(460, 390, image= c, tag="gameover")
 
@@ -276,3 +279,11 @@ entry_word = tkinter.Entry(root, width=20, font=(wf, 15))
 cursor = tkinter.PhotoImage(file="kitty_cursor.png")
 game_main()
 root.mainloop()
+
+# index 0 : 시작화면
+# index 1 : 인게임 화면
+# index 2 : 라벨 등 배치
+# index 3 : 단어 생성
+# index 4 : 게임 진행 (단어 드랍, 점수 체크 등)
+# index 5 : 게임 종료화면
+# index 6 : 다시하기 or 끝내기 선택
